@@ -5,7 +5,7 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
 st.set_page_config(
-    page_title="AI Resume Screening System",
+    page_title="AI-Powered Resume Screening System",
     page_icon="📄",
     layout="centered"
 )
@@ -13,7 +13,7 @@ st.set_page_config(
 st.markdown(
     """
     <h1 style='text-align:center;color:#1f77b4;'>
-    AI Resume Screening System
+    AI-Powered Resume Screening System
     </h1>
     <h4 style='text-align:center;color:gray;'>
     AI Based Candidate Screening Application
@@ -231,12 +231,12 @@ if analyze:
         st.subheader("Recommendation")
 
         if skill_match >= 80:
-            st.success("✅ Suitable Candidate")
+            st.success("Suitable Candidate")
 
         elif skill_match >= 50:
-            st.warning("🟡 Moderately Suitable")
+            st.warning("Moderately Suitable")
 
         else:
-            st.error("❌ Not Suitable")
+            st.error("Not Suitable")
         
        
