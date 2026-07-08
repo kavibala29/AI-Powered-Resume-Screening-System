@@ -1,6 +1,7 @@
 import streamlit as st
 import fitz
 import re
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 
@@ -48,6 +49,7 @@ if menu == "Technologies":
 - Python
 - Streamlit
 - PyMuPDF
+- Pandas
 - Scikit-learn
 - TF-IDF Vectorizer
 - Cosine Similarity
@@ -120,13 +122,15 @@ if analyze:
 
     else:
 
-        document = fitz.open(stream=resume_file.read(), filetype="pdf")
+        document = fitz.open(
+            stream=resume_file.read(),
+            filetype="pdf"
+        )
 
         resume_text = ""
 
         for page in document:
             resume_text += page.get_text()
-
 
         # Candidate Name Extraction
 
@@ -167,6 +171,7 @@ if analyze:
             if len(line.split()) <= 5:
                 candidate_name = line
                 break
+
         matched_skills = []
 
         for skill in skills:
@@ -194,7 +199,6 @@ if analyze:
         skill_match = (
             len(matched_skills) / len(skills)
         ) * 100
-
         st.markdown("---")
 
         st.subheader("Candidate Details")
@@ -260,7 +264,8 @@ if analyze:
 
         else:
             st.error("Not Suitable")
-            st.markdown("---")
+
+        st.markdown("---")
 
         st.subheader("Final Result")
 
@@ -273,15 +278,42 @@ if analyze:
         else:
             final_status = "Not Suitable"
 
+        # Create Screening Report using Pandas
+
+        result_df = pd.DataFrame({
+            "Candidate Name": [candidate_name],
+            "AI Similarity Score": [f"{score:.2f}%"],
+            "Skill Match": [f"{skill_match:.2f}%"],
+            "Matched Skills": [", ".join(matched_skills)],
+            "Missing Skills": [", ".join(missing_skills)],
+            "Recommendation": [final_status]
+        })
+
         st.success(f"""
-        Candidate Name : {candidate_name}
+           Candidate Name : {candidate_name}
 
-        Similarity Score : {score:.2f}%
+           Similarity Score : {score:.2f}%
 
-        Skill Match : {skill_match:.2f}%
+           Skill Match : {skill_match:.2f}%
 
-        Recommendation : {final_status}
-        """)
-        
+           Recommendation : {final_status}
+""")
+        st.subheader("Screening Report")
+
+        st.dataframe(
+            result_df,
+            use_container_width=True
+        )
+
+        csv = result_df.to_csv(
+            index=False
+        ).encode("utf-8")
+
+        st.download_button(
+            label="Download Screening Report (CSV)",
+            data=csv,
+            file_name="screening_report.csv",
+            mime="text/csv"
+        )
        
        
